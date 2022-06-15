@@ -238,7 +238,12 @@ text-align: center;
 .dashboard-events-container form{
     display: inline-block;
 }
+/*edit page*/
 
+.img-preview{
+    width: 100px;
+    margin-top: 20px;
+}
 /*footer*/
 
 footer{
