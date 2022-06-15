@@ -93,5 +93,11 @@ public function dashboard(){
 
 }
 
+public function destroy($id){
+
+  Event::findOrFail($id)->delete();
+
+  return redirect('/dashboard')->with('msg','Evento excluido com sucesso!');
+}
 
 }
