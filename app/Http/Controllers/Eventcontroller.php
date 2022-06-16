@@ -73,17 +73,32 @@ class Eventcontroller extends Controller
 
   }
 
-public function show($id){
+        public function show($id){
 
   $event = Event ::findOrFail($id);
 
+  $user = auth()->user();
+  $hasUserJoined = false;
+
+  if($user){
+
+    $userEvents = $user->eventsAsParticipant->toArray();
+
+    foreach($userEvents as $userEvent){
+    if($userEvent['id'] == $id){
+      $hasUserJoined = true;
+
+    }
+  }
+}
+
   $eventOwner =  User::where('id',$event->user_id)->first()->toArray();
 
-  return view('events.show',['event' => $event,'eventOwner'=>$eventOwner]);
+  return view('events.show',['event' => $event,'eventOwner'=>$eventOwner,'hasUserJoined'=> $hasUserJoined]);
 
 }
 
-public function dashboard(){
+          public function dashboard(){
 
   $user = auth()->user();
 
@@ -97,14 +112,14 @@ public function dashboard(){
 
 }
 
-public function destroy($id){
+        public function destroy($id){
 
   Event::findOrFail($id)->delete();
 
   return redirect('/dashboard')->with('msg','Evento excluido com sucesso!');
 }
 
-public function edit($id){
+        public function edit($id){
 
   $user = auth()->user();
 
@@ -119,7 +134,7 @@ public function edit($id){
   return view('events.edit',['event' => $event]);
 }
 
-public function update(Request $request){
+        public function update(Request $request){
 
   $data = $request->all();
 
@@ -145,7 +160,7 @@ public function update(Request $request){
 
 }
 
-public function joinEvent($id){
+         public function joinEvent($id){
 
   $user = auth()->user();
 
@@ -154,6 +169,18 @@ public function joinEvent($id){
   $event = Event::findOrFail($id);
 
   return redirect('/dashboard')->with('msg','Sua presença está confirmada no evento ' . $event->title);
+}
+
+      public function leaveEvent($id){
+
+  $user = auth()->user();
+
+  $user->eventsAsParticipant()->detach($id);
+
+  $event = Event::findOrFail($id);
+
+  return redirect('/dashboard')->with('msg','Você saiu com sucesso do evento: ' . $event->title);
+
 }
 
 }
